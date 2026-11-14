@@ -1,0 +1,6 @@
+{
+  "name": "SpectraLab SDR",
+  "description": "Real-time Software Defined Radio simulator for physics and cybersecurity education with live RF spectrum, waterfall spectrogram, I/Q constellation, demodulation, and interactive mathematical formulae.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
