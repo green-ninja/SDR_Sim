@@ -41,10 +41,27 @@ export function SpectrumWaterfallCanvas({
 }: SpectrumWaterfallCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const waterfallOffscreenRef = useRef<HTMLCanvasElement | null>(null);
   const waterfallHistoryRef = useRef<Float32Array[]>([]);
+  const [containerWidth, setContainerWidth] = useState(0);
   const [cursorInfo, setCursorInfo] = useState<{ freqHz: number; db: number; x: number; y: number } | null>(
     null
   );
+
+  // Track container resizes so canvas redraws cleanly even when stream is paused
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    setContainerWidth(container.clientWidth);
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(Math.round(entry.contentRect.width));
+      }
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
 
   // Append newest FFT spectrum row to waterfall ring buffer whenever frame updates
   useEffect(() => {
@@ -60,7 +77,7 @@ export function SpectrumWaterfallCanvas({
     const container = containerRef.current;
     if (!canvas || !container) return;
 
-    const width = Math.max(320, container.clientWidth);
+    const width = Math.max(320, containerWidth || container.clientWidth);
     const height = 390;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -153,7 +170,12 @@ export function SpectrumWaterfallCanvas({
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // FFT Spectrum Trace
+    // FFT Spectrum Trace (clipped to spectrum plot rectangle)
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(padLeft, padTop, plotW, specHeight);
+    ctx.clip();
+
     const spec = frame.spectrumDb;
     const bins = spec.length;
     ctx.beginPath();
@@ -176,6 +198,7 @@ export function SpectrumWaterfallCanvas({
     grad.addColorStop(1, 'rgba(6, 182, 212, 0.01)');
     ctx.fillStyle = grad;
     ctx.fill();
+    ctx.restore();
 
     // Emitter markers inside Nyquist span
     ctx.font = '10px "IBM Plex Mono", monospace';
@@ -207,31 +230,44 @@ export function SpectrumWaterfallCanvas({
       ctx.fillText('✖ CW JAMMER', jx, padTop + 14);
     }
 
-    // Waterfall Spectrogram Rendering
+    // Waterfall Spectrogram Rendering via offscreen canvas so drawImage honors DPR transform
     const history = waterfallHistoryRef.current;
-    if (history.length > 0 && wfHeight > 10) {
-      const wfImg = ctx.createImageData(Math.floor(plotW), Math.floor(wfHeight));
-      const data = wfImg.data;
-      const wInt = wfImg.width;
-      const hInt = wfImg.height;
+    if (history.length > 0 && wfHeight > 10 && plotW > 10) {
+      const wInt = Math.max(1, Math.floor(plotW));
+      const hInt = Math.max(1, Math.floor(wfHeight));
 
-      for (let row = 0; row < hInt; row++) {
-        const histIdx = Math.min(history.length - 1, Math.floor((row / hInt) * WATERFALL_ROWS));
-        const rowSpec = history[histIdx];
-        if (!rowSpec) continue;
-        const rowBins = rowSpec.length;
-
-        for (let col = 0; col < wInt; col++) {
-          const binIdx = Math.min(rowBins - 1, Math.floor((col / wInt) * rowBins));
-          const [r, g, b] = dbToRgb(rowSpec[binIdx]);
-          const pIdx = (row * wInt + col) * 4;
-          data[pIdx] = r;
-          data[pIdx + 1] = g;
-          data[pIdx + 2] = b;
-          data[pIdx + 3] = 255;
-        }
+      if (!waterfallOffscreenRef.current) {
+        waterfallOffscreenRef.current = document.createElement('canvas');
       }
-      ctx.putImageData(wfImg, padLeft, wfTop);
+      const offscreen = waterfallOffscreenRef.current;
+      if (offscreen.width !== wInt || offscreen.height !== hInt) {
+        offscreen.width = wInt;
+        offscreen.height = hInt;
+      }
+      const offCtx = offscreen.getContext('2d');
+      if (offCtx) {
+        const wfImg = offCtx.createImageData(wInt, hInt);
+        const data = wfImg.data;
+
+        for (let row = 0; row < hInt; row++) {
+          const histIdx = Math.min(history.length - 1, Math.floor((row / hInt) * WATERFALL_ROWS));
+          const rowSpec = history[histIdx];
+          if (!rowSpec) continue;
+          const rowBins = rowSpec.length;
+
+          for (let col = 0; col < wInt; col++) {
+            const binIdx = Math.min(rowBins - 1, Math.floor((col / wInt) * rowBins));
+            const [r, g, b] = dbToRgb(rowSpec[binIdx]);
+            const pIdx = (row * wInt + col) * 4;
+            data[pIdx] = r;
+            data[pIdx + 1] = g;
+            data[pIdx + 2] = b;
+            data[pIdx + 3] = 255;
+          }
+        }
+        offCtx.putImageData(wfImg, 0, 0);
+        ctx.drawImage(offscreen, padLeft, wfTop, plotW, wfHeight);
+      }
     }
 
     // Waterfall border & axis label
@@ -257,7 +293,7 @@ export function SpectrumWaterfallCanvas({
       ctx.stroke();
       ctx.setLineDash([]);
     }
-  }, [config, frame, emitters, cursorInfo]);
+  }, [config, frame, emitters, cursorInfo, containerWidth]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
