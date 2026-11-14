@@ -13,6 +13,7 @@ const NAV_ITEMS: Array<{ id: WorkspaceTab; label: string }> = [
   { id: 'methods', label: 'Methods' },
   { id: 'cybersecurity', label: 'Security' },
   { id: 'formulae', label: 'Formulae' },
+  { id: 'cheatsheet', label: 'Cheatsheet' },
 ];
 
 export function HeaderBar({
@@ -51,7 +52,7 @@ export function HeaderBar({
 
         <nav
           aria-label="Primary workspace navigation"
-          className="order-3 sm:order-2 flex w-full sm:w-auto items-center justify-between sm:justify-start gap-3 sm:gap-6 border-t border-slate-800/80 sm:border-t-0 overflow-x-auto"
+          className="order-3 sm:order-2 flex w-full sm:w-auto items-center justify-between sm:justify-start gap-2.5 sm:gap-6 border-t border-slate-800/80 sm:border-t-0 overflow-x-auto"
         >
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.id;
@@ -61,7 +62,7 @@ export function HeaderBar({
                 type="button"
                 onClick={() => onSelectTab(item.id)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative py-2.5 sm:py-4 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-cyan-400 ${
+                className={`relative py-2.5 sm:py-4 text-[11px] sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-cyan-400 ${
                   isActive
                     ? 'text-cyan-300'
                     : 'text-slate-300 hover:text-slate-100'

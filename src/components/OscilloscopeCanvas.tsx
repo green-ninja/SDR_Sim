@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { SdrConfig, SimulationFrame } from '../dsp/types';
+import { InfoTooltip } from './InfoTooltip';
 
 interface OscilloscopeCanvasProps {
   config: SdrConfig;
@@ -112,9 +113,12 @@ export function OscilloscopeCanvas({ config, frame }: OscilloscopeCanvasProps) {
       className="rounded-md border border-slate-800 bg-[#111827] p-3"
     >
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold text-slate-100">
-          Time-Domain Oscilloscope
-        </h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-xs font-semibold text-slate-100">
+            Time-Domain Oscilloscope
+          </h3>
+          <InfoTooltip tooltipId="oscilloscopePanel" />
+        </div>
         <div className="flex items-center gap-1 rounded bg-[#0B0F17] p-0.5 border border-slate-800">
           {(
             [

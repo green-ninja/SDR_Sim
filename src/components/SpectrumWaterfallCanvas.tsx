@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { formatFrequency } from '../dsp/physics';
 import type { RfEmitter, SdrConfig, SimulationFrame } from '../dsp/types';
+import { InfoTooltip } from './InfoTooltip';
 
 interface SpectrumWaterfallCanvasProps {
   config: SdrConfig;
@@ -307,10 +308,13 @@ export function SpectrumWaterfallCanvas({
       className="rounded-md border border-slate-800 bg-[#111827] p-3"
     >
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-3">
-          <h2 className="font-semibold text-slate-100">
-            RF Spectrum & Waterfall Spectrogram
-          </h2>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5">
+            <h2 className="font-semibold text-slate-100">
+              RF Spectrum & Waterfall Spectrogram
+            </h2>
+            <InfoTooltip tooltipId="spectrumPanel" />
+          </div>
           <span className="text-slate-400 font-mono-tabular">
             Span {(config.sampleRateHz / 1e3).toFixed(0)} kHz · Click trace to tune
           </span>

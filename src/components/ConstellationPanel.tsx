@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SimulationFrame } from '../dsp/types';
+import { InfoTooltip } from './InfoTooltip';
 
 interface ConstellationPanelProps {
   frame: SimulationFrame;
@@ -87,9 +88,12 @@ export function ConstellationPanel({ frame }: ConstellationPanelProps) {
       className="rounded-md border border-slate-800 bg-[#111827] p-3"
     >
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold text-slate-100">
-          I/Q Constellation & Decoder
-        </h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-xs font-semibold text-slate-100">
+            I/Q Constellation & Decoder
+          </h3>
+          <InfoTooltip tooltipId="constellationPanel" />
+        </div>
         <span className={`font-mono-tabular text-xs font-semibold ${integrityBadge.cls}`}>
           {integrityBadge.label}
         </span>

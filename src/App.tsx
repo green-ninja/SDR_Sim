@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CheatsheetView } from './components/CheatsheetView';
 import { ConstellationPanel } from './components/ConstellationPanel';
 import { ControlDeck } from './components/ControlDeck';
 import { CybersecurityLabView } from './components/CybersecurityLabView';
 import { FormulaInspector } from './components/FormulaInspector';
 import { FormulaReferenceView } from './components/FormulaReferenceView';
 import { HeaderBar } from './components/HeaderBar';
+import { InfoTooltip } from './components/InfoTooltip';
 import { MethodMatrixView } from './components/MethodMatrixView';
 import { OscilloscopeCanvas } from './components/OscilloscopeCanvas';
 import { SignalChainStrip } from './components/SignalChainStrip';
@@ -143,15 +145,27 @@ export default function App() {
               {/* Workspace Toolbar */}
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-slate-800 bg-[#111827] px-3.5 py-2.5">
                 <div className="flex flex-wrap items-center gap-3 text-xs font-mono-tabular text-slate-300">
-                  <span>
-                    Tuned: <strong className="text-cyan-300">{formatFrequency(config.centerFreqHz)}</strong>
+                  <span className="inline-flex items-center gap-1">
+                    <span>
+                      Tuned: <strong className="text-cyan-300">{formatFrequency(config.centerFreqHz)}</strong>
+                    </span>
+                    <InfoTooltip tooltipId="tunedFreq" />
                   </span>
                   <span aria-hidden="true" className="text-slate-600">·</span>
-                  <span>Nyquist: ±{(frame.metrics.nyquistFreqHz / 1e3).toFixed(0)} kHz</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span>Nyquist: ±{(frame.metrics.nyquistFreqHz / 1e3).toFixed(0)} kHz</span>
+                    <InfoTooltip tooltipId="nyquistSpan" />
+                  </span>
                   <span aria-hidden="true" className="text-slate-600">·</span>
-                  <span>Δf: {frame.metrics.binResolutionHz.toFixed(1)} Hz</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span>Δf: {frame.metrics.binResolutionHz.toFixed(1)} Hz</span>
+                    <InfoTooltip tooltipId="binResolution" />
+                  </span>
                   <span aria-hidden="true" className="text-slate-600">·</span>
-                  <span>SNR_q: {frame.metrics.quantizationSnrDb.toFixed(1)} dB</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span>SNR_q: {frame.metrics.quantizationSnrDb.toFixed(1)} dB</span>
+                    <InfoTooltip tooltipId="quantizationSnr" />
+                  </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -249,6 +263,8 @@ export default function App() {
         {activeTab === 'formulae' && (
           <FormulaReferenceView config={config} frame={frame} />
         )}
+
+        {activeTab === 'cheatsheet' && <CheatsheetView />}
       </main>
     </div>
   );

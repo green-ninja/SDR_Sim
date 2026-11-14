@@ -23,7 +23,13 @@ export type PipelineStageId =
   | 'ddc_filter'
   | 'demod';
 
-export type WorkspaceTab = 'workbench' | 'tutorials' | 'methods' | 'cybersecurity' | 'formulae';
+export type WorkspaceTab =
+  | 'workbench'
+  | 'tutorials'
+  | 'methods'
+  | 'cybersecurity'
+  | 'formulae'
+  | 'cheatsheet';
 
 export interface RfEmitter {
   id: string;

@@ -7,6 +7,7 @@ import type {
   SignalPreset,
   WindowFunction,
 } from '../dsp/types';
+import { InfoTooltip } from './InfoTooltip';
 
 interface ControlDeckProps {
   config: SdrConfig;
@@ -31,12 +32,15 @@ export function ControlDeck({
     >
       {/* 1. RF Environment Preset */}
       <div>
-        <label
-          htmlFor="preset-select"
-          className="block text-xs font-semibold text-slate-200"
-        >
-          RF Signal Environment
-        </label>
+        <div className="flex items-center gap-1.5">
+          <label
+            htmlFor="preset-select"
+            className="text-xs font-semibold text-slate-200"
+          >
+            RF Signal Environment
+          </label>
+          <InfoTooltip tooltipId="presetEnv" />
+        </div>
         <select
           id="preset-select"
           value={config.presetId}
@@ -90,9 +94,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="center-freq-slider" className="text-slate-300">
-              Center Frequency (f_c)
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="center-freq-slider" className="text-slate-300">
+                Center Frequency (f_c)
+              </label>
+              <InfoTooltip tooltipId="centerFreq" />
+            </span>
             <span className="font-mono-tabular font-semibold text-cyan-300">
               {formatFrequency(config.centerFreqHz)}
             </span>
@@ -111,9 +118,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="rf-gain-slider" className="text-slate-300">
-              LNA RF Gain
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="rf-gain-slider" className="text-slate-300">
+                LNA RF Gain
+              </label>
+              <InfoTooltip tooltipId="rfGain" />
+            </span>
             <span className="font-mono-tabular font-semibold text-slate-100">
               +{config.rfGainDb} dB
             </span>
@@ -141,9 +151,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="sample-rate-slider" className="text-slate-300">
-              Sample Rate (f_s)
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="sample-rate-slider" className="text-slate-300">
+                Sample Rate (f_s)
+              </label>
+              <InfoTooltip tooltipId="sampleRate" />
+            </span>
             <span className="font-mono-tabular font-semibold text-slate-100">
               {(config.sampleRateHz / 1e3).toFixed(0)} kS/s
             </span>
@@ -162,9 +175,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="adc-bits-slider" className="text-slate-300">
-              ADC Resolution (N bits)
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="adc-bits-slider" className="text-slate-300">
+                ADC Resolution (N bits)
+              </label>
+              <InfoTooltip tooltipId="adcBits" />
+            </span>
             <span className="font-mono-tabular font-semibold text-slate-100">
               {config.adcBits}-bit
             </span>
@@ -181,15 +197,21 @@ export function ControlDeck({
           />
         </div>
 
-        <label className="flex cursor-pointer items-center justify-between gap-3 rounded border border-slate-800 bg-[#0B0F17] px-3 py-2 text-xs">
-          <span className="text-slate-200">Analog Anti-Aliasing Filter</span>
+        <div className="flex items-center justify-between gap-3 rounded border border-slate-800 bg-[#0B0F17] px-3 py-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <label htmlFor="anti-aliasing-checkbox" className="cursor-pointer text-slate-200">
+              Analog Anti-Aliasing Filter
+            </label>
+            <InfoTooltip tooltipId="antiAliasing" />
+          </div>
           <input
+            id="anti-aliasing-checkbox"
             type="checkbox"
             checked={config.antiAliasingFilter}
             onChange={(e) => onUpdateConfig({ antiAliasingFilter: e.target.checked })}
-            className="h-4 w-4 accent-cyan-500"
+            className="h-4 w-4 cursor-pointer accent-cyan-500"
           />
-        </label>
+        </div>
       </div>
 
       <hr className="border-slate-800" />
@@ -202,9 +224,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="filter-bw-slider" className="text-slate-300">
-              Channel Filter BW
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="filter-bw-slider" className="text-slate-300">
+                Channel Filter BW
+              </label>
+              <InfoTooltip tooltipId="channelFilterBw" />
+            </span>
             <span className="font-mono-tabular font-semibold text-cyan-300">
               {formatBandwidth(config.channelFilterBwHz)}
             </span>
@@ -223,9 +248,12 @@ export function ControlDeck({
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label htmlFor="fft-size-select" className="block text-[11px] text-slate-400">
-              FFT Size (N)
-            </label>
+            <div className="flex items-center gap-1">
+              <label htmlFor="fft-size-select" className="text-[11px] text-slate-400">
+                FFT Size (N)
+              </label>
+              <InfoTooltip tooltipId="fftSize" />
+            </div>
             <select
               id="fft-size-select"
               value={config.fftSize}
@@ -240,9 +268,12 @@ export function ControlDeck({
           </div>
 
           <div>
-            <label htmlFor="window-select" className="block text-[11px] text-slate-400">
-              FFT Window
-            </label>
+            <div className="flex items-center gap-1">
+              <label htmlFor="window-select" className="text-[11px] text-slate-400">
+                FFT Window
+              </label>
+              <InfoTooltip tooltipId="fftWindow" />
+            </div>
             <select
               id="window-select"
               value={config.windowFunction}
@@ -261,9 +292,12 @@ export function ControlDeck({
 
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label htmlFor="demod-select" className="block text-[11px] text-slate-400">
-              Demodulator
-            </label>
+            <div className="flex items-center gap-1">
+              <label htmlFor="demod-select" className="text-[11px] text-slate-400">
+                Demodulator
+              </label>
+              <InfoTooltip tooltipId="demodMode" />
+            </div>
             <select
               id="demod-select"
               value={config.demodMode}
@@ -284,9 +318,12 @@ export function ControlDeck({
 
           <div>
             <div className="flex items-center justify-between text-[11px]">
-              <label htmlFor="squelch-slider" className="text-slate-400">
-                Squelch
-              </label>
+              <span className="flex items-center gap-1">
+                <label htmlFor="squelch-slider" className="text-slate-400">
+                  Squelch
+                </label>
+                <InfoTooltip tooltipId="squelch" />
+              </span>
               <span className="font-mono-tabular text-amber-300">
                 {config.squelchDb} dBFS
               </span>
@@ -315,9 +352,12 @@ export function ControlDeck({
 
         <div>
           <div className="flex items-center justify-between text-xs">
-            <label htmlFor="snr-slider" className="text-slate-300">
-              Channel SNR (AWGN)
-            </label>
+            <span className="flex items-center gap-1.5">
+              <label htmlFor="snr-slider" className="text-slate-300">
+                Channel SNR (AWGN)
+              </label>
+              <InfoTooltip tooltipId="channelSnr" />
+            </span>
             <span className="font-mono-tabular font-semibold text-slate-100">
               {config.snrDb} dB
             </span>
@@ -337,9 +377,12 @@ export function ControlDeck({
         <div className="grid grid-cols-2 gap-2">
           <div>
             <div className="flex items-center justify-between text-[11px]">
-              <label htmlFor="iq-phase-slider" className="text-slate-400">
-                I/Q Phase Err
-              </label>
+              <span className="flex items-center gap-1">
+                <label htmlFor="iq-phase-slider" className="text-slate-400">
+                  I/Q Phase Err
+                </label>
+                <InfoTooltip tooltipId="iqPhaseError" />
+              </span>
               <span className="font-mono-tabular text-slate-200">
                 {config.iqPhaseErrorDeg}°
               </span>
@@ -358,9 +401,12 @@ export function ControlDeck({
 
           <div>
             <div className="flex items-center justify-between text-[11px]">
-              <label htmlFor="dc-offset-slider" className="text-slate-400">
-                DC Offset
-              </label>
+              <span className="flex items-center gap-1">
+                <label htmlFor="dc-offset-slider" className="text-slate-400">
+                  DC Offset
+                </label>
+                <InfoTooltip tooltipId="dcOffset" />
+              </span>
               <span className="font-mono-tabular text-slate-200">
                 {config.dcOffset.toFixed(2)}
               </span>
@@ -379,9 +425,12 @@ export function ControlDeck({
         </div>
 
         <div>
-          <label htmlFor="jammer-select" className="block text-xs text-slate-300">
-            Adversarial Jammer / Spoof Injection
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label htmlFor="jammer-select" className="text-xs text-slate-300">
+              Adversarial Jammer / Spoof Injection
+            </label>
+            <InfoTooltip tooltipId="jammerMode" />
+          </div>
           <select
             id="jammer-select"
             value={config.jammerMode}
